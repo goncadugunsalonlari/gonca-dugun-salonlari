@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <!-- Firebase App (modül bazlı) -->
+<script type="module">
+  // Firebase'den gerekli fonksiyonları al
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+  // Firebase config (sana özel değerler buraya geliyor)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBaEZi6KmB1L1gO893VMmyfDwhLiXcsj1U",
+    authDomain: "gonca-dugun.firebaseapp.com",
+    databaseURL: "https://gonca-dugun-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "gonca-dugun",
+    storageBucket: "gonca-dugun.appspot.com",
+    messagingSenderId: "383519122350",
+    appId: "1:383519122350:web:331fe124abc82b9e8a843f",
+    measurementId: "G-9ER3FF0EV2"
+  };
+
+  // Firebase'i başlat
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Form gönderilince veriyi Firebase'e kaydet
+  const form = document.getElementById("yorumForm");
+  const yorumListesi = document.getElementById("yorumListesi");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const isim = document.getElementById("isim").value;
+    const yorum = document.getElementById("yorum").value;
+
+    push(ref(db, "yorumlar/"), {
+      isim,
+      yorum,
+      tarih: new Date().toLocaleString()
+    });
+
+    form.reset(); // Formu temizle
+  });
+
+  // Veritabanından yorumları al ve göster
+  onValue(ref(db, "yorumlar/"), (snapshot) => {
+    yorumListesi.innerHTML = ""; // Önceki yorumları temizle
+    const veriler = snapshot.val();
+
+    for (let key in veriler) {
+      const y = veriler[key];
+      const yorumDiv = document.createElement("div");
+      yorumDiv.className = "yorum";
+
+      yorumDiv.innerHTML = `
+        <p><strong>${y.isim}</strong> <em>(${y.tarih})</em></p>
+        <p>${y.yorum}</p>
+        <hr />
+      `;
+
+      yorumListesi.prepend(yorumDiv);
+    }
+  });
+</script>
+
+<head>
+  <!-- Firebase SDK'ları -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gonca Düğün Salonları</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="overlay">
+      <img src="img/logo.png" alt="gonca logo" class="logo">
+      <p class="intro-text">Hayalinizdeki Düğün Burada Başlar</p>
+
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav>
+    <ul>
+      <li><a href="#gallery">Galeri</a></li>
+      <li><a href="#services">Hizmetler</a></li>
+      <li><a href="#comments">Yorumlar</a></li>
+      <li><a href="#contact">İletişim</a></li>
+    </ul>
+  </nav>
+
+  <!-- GALERİ -->
+  <section id="gallery">
+  <h2 style="text-align: center;">Salonumuzdan Kareler</h2>
+  <div class="carousel-container">
+    <div class="carousel-track">
+      <img src="img/salon1.jpg" alt="Salon 1">
+      <img src="img/salon2.jpg" alt="Salon 2">
+      <img src="img/salon3.jpg" alt="Salon 3">
+      <img src="img/salon4.jpg" alt="Salon 4">
+    </div>
+  </div>
+</section>
+
+
+  <!-- HİZMETLER -->
+  <section id="services">
+    <h2 style="text-align: center;">Hizmetlerimiz</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <h3>Düğün Organizasyonu</h3>
+        <p>Profesyonel planlama, çiçek düzenleme ve catering hizmetleri.</p>
+      </div>
+      <div class="service-card">
+        <h3>Kına</h3>
+        <p>Profesyonel planlama, kına kiyafetleri ve catering hizmetleri.</p>
+      </div>
+      <div class="service-card">
+        <h3>Nişan & İsteme Merasimi</h3>
+        <p>Özel temalı nişan ve İsteme Merasimi.</p>
+      </div>
+      <div class="service-card">
+        <h3>Mevlüt organizasyonları</h3>
+        <p>Yemekli Mevlüt Organizasyonları.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- YORUMLAR -->
+  <section id="yorumlar">
+  <h2>Yorumlar</h2>
+
+  <form id="yorumForm">
+    <input type="text" id="isim" placeholder="Adınız" required />
+    <textarea id="yorum" placeholder="Yorumunuz" required></textarea>
+    <button type="submit">Gönder</button>
+  </form>
+
+  <div id="yorumListesi">
+    <!-- Yorumlar burada görünecek -->
+  </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer id="contact">
+    <h2>Adresimiz</h2>
+    <p>Semerciler Mah. Postane Sok. Havuzlu Çarşı Kat:3 Adapazarı/Sakarya</p>
+    <p>Telefon: 0 542 681 42 73</p>
+    <h2>Salonumuzun Konumu</h2>
+<iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6115.809625431422!2d30.409194676787864!3d40.78000500270195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14ccb09b35411e3f%3A0x6a6ec660b6e9c849!2sHavuzlu%20%C3%87ar%C5%9F%C4%B1%20%C4%B0%C5%9F%20Han%C4%B1%2C%20Semerciler%2C%20Postane%20Sk.%2C%2054100%20Adapazar%C4%B1%2FSakarya!5e0!3m2!1str!2str!4v1720876233029!5m2!1str!2str"
+  width="100%"
+  height="400"
+  style="border:0; border-radius: 10px; margin-top: 20px;"
+  allowfullscreen=""
+  loading="lazy"
+  referrerpolicy="no-referrer-when-downgrade">
+</iframe>
+
+    <a href="https://wa.me/905426814273" class="whatsapp-button">WhatsApp'tan Sor</a>
+    <div class="social-links">
+      <h3>Bizi Takip Edin</h3>
+      <a href="https://www.instagram.com" target="_blank">Instagram</a>
+      <a href="https://www.facebook.com" target="_blank">Facebook</a>
+    </div>
+  </footer>
+
+  <!-- YORUM SCRIPTI -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('commentForm');
+      const commentList = document.getElementById('comment-list');
+
+      function loadComments() {
+        const savedComments = JSON.parse(localStorage.getItem('gonca-comments')) || [];
+        commentList.innerHTML = savedComments.map(comment =>
+          `<div class="comment"><strong>${comment.name}</strong><p>${comment.text}</p></div>`
+        ).join('');
+      }
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const comment = document.getElementById('comment').value.trim();
+        if (name && comment) {
+          const newComment = { name, text: comment };
+          const saved = JSON.parse(localStorage.getItem('gonca-comments')) || [];
+          saved.push(newComment);
+          localStorage.setItem('gonca-comments', JSON.stringify(saved));
+          loadComments();
+          form.reset();
+        }
+      });
+
+      loadComments();
+    });
+  </script>
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBa2Ei6KmB1l1gO893VMmfyDwhLiXcsj1U",
+    authDomain: "gonca-dugun.firebaseapp.com",
+    databaseURL: "https://gonca-dugun-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "gonca-dugun",
+    storageBucket: "gonca-dugun.appspot.com",
+    messagingSenderId: "383519122350",
+    appId: "1:383519122350:web:331fe124abc82b9e8a843f",
+    measurementId: "G-9ER3FF0EVZ"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+   </script>
+  
+
+</body>
+</html>
+
